@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TasteCraft - Food Recipe App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ========================================== -->
+  <!-- 1. LANDING / LOGIN SCREEN                  -->
+  <!-- ========================================== -->
+  <section id="auth-screen" class="auth-landing-wrapper">
+    <div class="auth-brand-header">
+      <div class="brand-logo-large">🍳 TasteCraft</div>
+      <p class="brand-tagline">Your community cookbook, meal planner & recipe catalog</p>
+    </div>
+
+    <div class="auth-card">
+      <div id="signin-container">
+        <h2>Account Login</h2>
+        <p class="auth-subtitle">Sign in using your Gmail account.</p>
+
+        <form id="signin-form">
+          <div class="form-group">
+            <label for="login-email">Email Address</label>
+            <input 
+              type="email" 
+              id="login-email" 
+              required 
+              placeholder="e.g. chaitanya@gmail.com" 
+              autocomplete="email" 
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input 
+              type="password" 
+              id="login-password" 
+              required 
+              placeholder="Enter your password" 
+              autocomplete="current-password" 
+            />
+          </div>
+
+          <div id="auth-error-msg" class="auth-error-banner" style="display: none;"></div>
+
+          <button type="submit" class="btn btn-primary form-submit-btn">Enter TasteCraft</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 2. MAIN APPLICATION (LOCKED UNTIL LOGIN)  -->
+  <!-- ========================================== -->
+  <div id="app-dashboard" style="display: none;">
+    <header>
+      <div class="nav-container">
+        <div class="logo">🍳 TasteCraft</div>
+        
+        <div class="nav-right">
+          <!-- Active User Badge -->
+          <div class="user-badge" id="current-user-badge">
+            <span class="user-avatar" id="badge-avatar">👨‍🍳</span>
+            <span id="badge-username">Chaitanya</span>
+            <span class="role-tag" id="badge-role">User</span>
+          </div>
+          
+          <button id="auth-btn" class="btn btn-outline" title="Sign out to return to login screen">Sign Out</button>
+          <button id="view-all-btn" class="btn btn-outline active">All Recipes</button>
+          <button id="view-my-posts-btn" class="btn btn-outline">My Posts (<span id="my-posts-count">0</span>)</button>
+          <button id="view-saved-btn" class="btn btn-outline">Saved (<span id="saved-count">0</span>)</button>
+          <button id="add-recipe-btn" class="btn btn-primary">+ Submit Recipe</button>
+          <button id="export-btn" class="btn btn-secondary" title="Export current recipes directly into script.js format">📋 Export to script.js</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- Filter & Search Section -->
+      <section class="filter-card">
+        <div class="search-bar">
+          <input type="text" id="search-input" placeholder="Search by name or ingredients (e.g., garlic, tomato, pasta)..." />
+        </div>
+        <div class="filter-options">
+          <select id="cuisine-filter">
+            <option value="">All Cuisines</option>
+            <option value="Italian">Italian</option>
+            <option value="Mexican">Mexican</option>
+            <option value="Indian">Indian</option>
+            <option value="Japanese">Japanese</option>
+            <option value="American">American</option>
+          </select>
+
+          <select id="diet-filter">
+            <option value="">All Diets</option>
+            <option value="None">Regular</option>
+            <option value="Vegetarian">Vegetarian</option>
+            <option value="Vegan">Vegan</option>
+            <option value="Gluten-Free">Gluten-Free</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Recipe Gallery Grid -->
+      <section id="recipe-list" class="recipe-grid"></section>
+    </main>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 3. MODALS (RECIPE DETAILS & SUBMISSION)    -->
+  <!-- ========================================== -->
+
+  <!-- Recipe Details Modal -->
+  <div id="recipe-modal" class="modal-overlay">
+    <div class="modal">
+      <button class="close-modal" id="close-recipe-modal">&times;</button>
+      <h2 id="modal-title"></h2>
+      <div class="tags" id="modal-tags"></div>
+      <p id="modal-author" class="modal-subtitle"></p>
+      
+      <div class="modal-section">
+        <h3>Rate this recipe</h3>
+        <div class="interactive-rating" id="modal-star-rating">
+          <span data-val="1">★</span>
+          <span data-val="2">★</span>
+          <span data-val="3">★</span>
+          <span data-val="4">★</span>
+          <span data-val="5">★</span>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h3>Ingredients</h3>
+        <ul id="modal-ingredients"></ul>
+      </div>
+
+      <div class="modal-section">
+        <h3>Step-by-Step Instructions</h3>
+        <ol id="modal-instructions"></ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit Recipe Modal -->
+  <div id="form-modal" class="modal-overlay">
+    <div class="modal">
+      <button class="close-modal" id="close-form-modal">&times;</button>
+      <h2>Share a Recipe</h2>
+      <p class="modal-subtitle">Add your recipe to the community cookbook.</p>
+
+      <form id="recipe-form">
+        <div class="form-group">
+          <label for="f-title">Recipe Title</label>
+          <input type="text" id="f-title" required placeholder="e.g. Creamy Mushroom Risotto" />
+        </div>
+
+        <div class="form-group">
+          <label for="f-cuisine">Cuisine</label>
+          <select id="f-cuisine" required>
+            <option value="Italian">Italian</option>
+            <option value="Mexican">Mexican</option>
+            <option value="Indian">Indian</option>
+            <option value="Japanese">Japanese</option>
+            <option value="American">American</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="f-diet">Dietary Preference</label>
+          <select id="f-diet" required>
+            <option value="None">Regular</option>
+            <option value="Vegetarian">Vegetarian</option>
+            <option value="Vegan">Vegan</option>
+            <option value="Gluten-Free">Gluten-Free</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="f-image">Image URL</label>
+          <input type="url" id="f-image" placeholder="https://images.unsplash.com/..." required />
+        </div>
+
+        <div class="form-group">
+          <label for="f-ingredients">Ingredients (Comma separated)</label>
+          <textarea id="f-ingredients" required placeholder="Rice, Mushrooms, Vegetable broth, Parmesan, Garlic"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="f-instructions">Step-by-Step Instructions (One per line)</label>
+          <textarea id="f-instructions" required style="height: 100px;" placeholder="Sauté garlic and mushrooms&#10;Add rice and toast for 2 mins&#10;Gradually stir in warm broth until creamy"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary form-submit-btn">Post Recipe</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
